@@ -1,7 +1,12 @@
 from flask import Flask, request, render_template_string
 import sqlite3
 from datetime import datetime
+
 app = Flask(__name__)
+
+# -----------------------------
+# Create Database (if not exists)
+# -----------------------------
 def init_db():
     conn = sqlite3.connect("water.db")
     cursor = conn.cursor()
@@ -20,6 +25,9 @@ def init_db():
 
 init_db()
 
+# -----------------------------
+# Route to receive data from ESP32
+# -----------------------------
 @app.route('/data', methods=['POST'])
 def receive_data():
     data = request.json
@@ -28,7 +36,7 @@ def receive_data():
     outlet = float(data['outlet'])
     difference = inlet - outlet
 
-    
+    # Theft condition (adjust threshold if needed)
     if difference > 1:
         status = "THEFT DETECTED"
     else:
@@ -48,16 +56,19 @@ def receive_data():
     return {"message": "Data saved successfully"}, 200
 
 
-
+# -----------------------------
+# Dashboard Route
+# -----------------------------
 @app.route('/')
 def dashboard():
     conn = sqlite3.connect("water.db")
     cursor = conn.cursor()
 
+    # Latest reading
     cursor.execute("SELECT * FROM readings ORDER BY id DESC LIMIT 1")
     row = cursor.fetchone()
 
-   
+    # Last 10 readings
     cursor.execute("SELECT inlet, outlet, timestamp FROM readings ORDER BY id DESC LIMIT 10")
     rows = cursor.fetchall()
     conn.close()
@@ -73,7 +84,7 @@ def dashboard():
     inlet_data = [r[0] for r in rows]
     outlet_data = [r[1] for r in rows]
     labels = [r[2][-8:] for r in rows]
-$$$&#@$^&&&
+
     html = f"""
 <!DOCTYPE html>
 <html>
