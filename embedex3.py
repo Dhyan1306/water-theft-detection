@@ -73,7 +73,7 @@ def dashboard():
     inlet_data = [r[0] for r in rows]
     outlet_data = [r[1] for r in rows]
     labels = [r[2][-8:] for r in rows]
-
+$$$&#@$^&&&
     html = f"""
 <!DOCTYPE html>
 <html>
